@@ -1,2 +1,2 @@
-# exercise-2
-CM_ex_2
+# exercise-3
+CM_ex_3
