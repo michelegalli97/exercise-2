@@ -38,7 +38,7 @@ class Particle1D(object):
         "x = 2.0, v = 0.5, m = 1.0"
         """
 
-        return "x = " + str(self.position) + ", v = " + str(self.velocity) + ", m = " + str(self.mass)
+        return "x = " + str(self.position[0]) + ", v = " + str(self.velocity) + ", m = " + str(self.mass)
     
     def kinetic_energy(self):
         """
@@ -81,3 +81,6 @@ class Particle1D(object):
         """
 
         self.position = self.position + dt*self.velocity + 0.5*dt**2*force/self.mass
+       
+       
+       blah blha blah
