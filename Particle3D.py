@@ -24,7 +24,7 @@ class Particle3D(object):
     * first- and second order position updates
     """
 
-    def __init__(self, pos, vel, mass):
+    def __init__(self, pos, vel, mass, label):
         """
         Initialise a Particle1D instance
         
@@ -36,6 +36,7 @@ class Particle3D(object):
         self.position = pos
         self.velocity = vel
         self.mass = mass
+        self.label = label
     
     def __str__(self):
         """
@@ -44,7 +45,7 @@ class Particle3D(object):
         "x = 2.0, v = 0.5, m = 1.0"
         """
 
-        return "x = " + str(self.position[0]) + "y= " + str(self.position[1]) + "z= " + str(self.position[2]) +  ", m = " + str(self.mass)
+        return str(self.label) + "x = " + str(self.position[0]) + "y= " + str(self.position[1]) + "z= " + str(self.position[2]) +  ", m = " + str(self.mass)
     
     def kinetic_energy(self):
         """
@@ -88,8 +89,21 @@ class Particle3D(object):
         for i in len(velocity):
             self.position[i] = self.position[i] + dt*self.velocity[i] + 0.5*dt**2*force[i]/self.mass
 
-    def init_from_file(filename,n):
-        file_handle = open(filename, "r")
-        for i in n:
-            particle[i] = Particle3D(
-        
+    def init_from_file(filename):
+        file_handle = open(filename,"r")
+        pos = []
+        vel = []
+        mass = 0
+        label = 0
+        numbers = file_handle.readline()
+        split_numbers = [numbers.split()]
+        for i in range (3):
+            pos[i] = float(split_numbers[i])
+        for i in range (3,6):
+            vel[i] = float(split_numbers[i])
+        mass = float(split_numbers[6])
+        label = split_numbers[7]
+        return particle = Particle3D(self,pos,vel,mass,label)
+
+    def relative_pos(particleA,particleB):
+        return particleA.position-particleB.position
