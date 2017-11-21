@@ -52,7 +52,7 @@ class Particle3D(object):
         1/2*mass*vel^2
         """
         
-        return 0.5*self.mass*math.sqrt(self.velocity[0]**2+self.velocity[1]**2=self.velocity[2]**2)
+        return 0.5*self.mass*np.inner(self.velocity,self.velocity)
 
     # Time integration methods
 
@@ -65,7 +65,7 @@ class Particle3D(object):
         :param force: force on particle as float
         """
         for i in len(velocity):
-            self.velocity[i] = self.velocity[i] + dt*force/self.mass
+            self.velocity[i] = self.velocity[i] + dt*force[i]/self.mass
 
     def leap_pos1st(self, dt):
         """
@@ -86,7 +86,7 @@ class Particle3D(object):
         :param force: current force as float
         """
         for i in len(velocity):
-            self.position[i] = self.position[i] + dt*self.velocity[i] + 0.5*dt**2*force/self.mass
+            self.position[i] = self.position[i] + dt*self.velocity[i] + 0.5*dt**2*force[i]/self.mass
 
     def init_from_file(filename,n):
         file_handle = open(filename, "r")
