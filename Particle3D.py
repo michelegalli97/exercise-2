@@ -41,8 +41,6 @@ class Particle3D(object):
     def __str__(self):
         """
         Define output format.
-        For particle p=(2.0, 0.5, 1.0) this will print as
-        "x = 2.0, v = 0.5, m = 1.0"
         """
 
         return str(self.label) + "x = " + str(self.position[0]) + "y= " + str(self.position[1]) + "z= " + str(self.position[2]) +  ", m = " + str(self.mass)
@@ -65,8 +63,7 @@ class Particle3D(object):
         :param dt: timestep as float
         :param force: force on particle as float
         """
-        for i in len(velocity):
-            self.velocity[i] = self.velocity[i] + dt*force[i]/self.mass
+        self.velocity = self.velocity + dt*force/self.mass
 
     def leap_pos1st(self, dt):
         """
@@ -75,8 +72,7 @@ class Particle3D(object):
 
         :param dt: timestep as float
         """
-        for i in len(velocity):
-            self.position[i] = self.position[i] + dt*self.velocity[i]
+        self.position = self.position + dt*self.velocity
 
     def leap_pos2nd(self, dt, force):
         """
@@ -86,24 +82,34 @@ class Particle3D(object):
         :param dt: timestep as float
         :param force: current force as float
         """
-        for i in len(velocity):
-            self.position[i] = self.position[i] + dt*self.velocity[i] + 0.5*dt**2*force[i]/self.mass
-
+        self.position = self.position + dt*self.velocity + 0.5*(dt**2)*force/self.mass
+    
+    @staticmethod
     def init_from_file(filename):
         file_handle = open(filename,"r")
-        pos = []
-        vel = []
-        mass = 0
-        label = 0
-        numbers = file_handle.readline()
-        split_numbers = [numbers.split()]
-        for i in range (3):
-            pos[i] = float(split_numbers[i])
-        for i in range (3,6):
-            vel[i] = float(split_numbers[i])
-        mass = float(split_numbers[6])
-        label = split_numbers[7]
-        return particle = Particle3D(self,pos,vel,mass,label)
+        pos = np.array([0.1,0.1,0.1])
+        vel = np.array([0.1,0.1,0.1])
+        alpha = float(file_handle.readline())
+        De = float(file_handle.readline())
+        Re = float(file_handle.readline())
+        pos[0] = float(file_handle.readline())
+        pos[1] = float(file_handle.readline())
+        pos[2] = float(file_handle.readline())
+        vel[0] = float(file_handle.readline())
+        vel[1] = float(file_handle.readline())
+        vel[2] = float(file_handle.readline())
+        mass = float(file_handle.readline())
+        label = file_handle.readline()
+        file_handle.close()
+        fin = open(filename,"r")
+        data_list = fin.readlines()
+        fin.close()
+        del data_list[3:10+1]
+        print (data_list)
+        fout = open("newfile.txt", "w")
+        fout.writelines(data_list)
+        return Particle3D(pos,vel,mass,label)
 
+    @staticmethod
     def relative_pos(particleA,particleB):
-        return particleA.position-particleB.position
+        return np.subtract(particleA.position,particleB.position)
