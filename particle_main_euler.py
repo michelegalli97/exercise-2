@@ -24,7 +24,8 @@ def force_dw(particle1, particle2, alpha, De, Re):
     """
     r12 = Particle3D.relative_pos(particle1,particle2)
     modr12 = np.linalg.norm(r12)
-    force = -2*alpha*De*(1-math.exp(-alpha*(modr12-Re)))*math.exp(-alpha*(modr12-Re))*r12
+    r12hat = (1/modr12)*r12
+    force = -2*alpha*De*(1-math.exp(-alpha*(modr12-Re)))*math.exp(-alpha*(modr12-Re))*r12hat
     return force
 
 def pot_energy_dw(particle1, particle2, alpha, De, Re):
@@ -55,8 +56,8 @@ def main():
     infile = open(infile_name, "r")
 
     # Set up simulation parameters
-    dt = 0.001
-    numstep = 10000
+    dt = 0.0092
+    numstep = 1000
     time = 0.0
     alpha = float(infile.readline())
     De = float(infile.readline())
@@ -69,6 +70,7 @@ def main():
 
     # Write out initial conditions
     energy = p1.kinetic_energy() + p2.kinetic_energy() + pot_energy_dw(p1 ,p2 , alpha, De,Re)
+    initial_energy = energy
     outfile.write("{0:f} {1:f} {2:12.8f}\n".format(time,np.linalg.norm(Particle3D.relative_pos(p1,p2)),energy))
 
 
@@ -76,7 +78,7 @@ def main():
     time_list = [time]
     relpos_list = [Re]
     energy_list = [energy]
-
+    
     # Start the time integration loop
 
     for i in range(numstep):
@@ -105,6 +107,16 @@ def main():
     # Post-simulation:
 
     # Close output file
+    delta_E = max(energy_list)-min(energy_list)
+    avg_E = sum(energy_list)/len(energy_list)
+    if -delta_E/avg_E <= 1e-3:
+        print ("Average OK " + str(-delta_E/avg_E))
+    else:
+        print ("Average Fail " + str(-delta_E/avg_E))
+    if -delta_E/initial_energy <= 1e-3:
+        print ("Initial OK " + str(-delta_E/initial_energy))
+    else:
+        print ("Initial Fail " + str(-delta_E/initial_energy))
     outfile.close()
 
     # Plot particle trajectory to screen
