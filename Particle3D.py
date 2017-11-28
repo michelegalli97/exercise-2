@@ -85,31 +85,23 @@ class Particle3D(object):
         self.position = self.position + dt*self.velocity + 0.5*(dt**2)*force/self.mass
     
     @staticmethod
-    def init_from_file(filename):
-        file_handle = open(filename,"r")
-        pos = np.array([0.1,0.1,0.1])
-        vel = np.array([0.1,0.1,0.1])
-        alpha = float(file_handle.readline())
-        De = float(file_handle.readline())
-        Re = float(file_handle.readline())
-        pos[0] = float(file_handle.readline())
-        pos[1] = float(file_handle.readline())
-        pos[2] = float(file_handle.readline())
-        vel[0] = float(file_handle.readline())
-        vel[1] = float(file_handle.readline())
-        vel[2] = float(file_handle.readline())
-        mass = float(file_handle.readline())
-        label = file_handle.readline()
-        file_handle.close()
-        fin = open(filename,"r")
-        data_list = fin.readlines()
-        fin.close()
-        del data_list[3:10+1]
-        print (data_list)
-        fout = open("newfile.txt", "w")
-        fout.writelines(data_list)
-        return Particle3D(pos,vel,mass,label)
-
+    
+# lines should be written as: Re,De,alpha,label,mass,pos[0 -> 2], vel[0 -> 2]
+def init_from_file(filename,l):
+    file_handle = open(filename, "r") #open file
+    lines = file_handle.readlines()  # initialise list of lists, all the lines
+    choose = lines[l].split(",")  #splite line "l" 
+    pos = np.array([0 for x in xrange(0,3)]) #initialize empty arrays
+    vel = np.array([0 for x in xrange(0,3)])
+    label = choose[3]    # read mass, label
+    mass = float(choose[4])
+    for i in xrange(5,8):   #read pos and vel
+        pos[i-5] = float(choose[i])
+    for j in xrange(8,11):
+        vel[j-8] = float(choose[j])
+    
+    return Particle3D(pos,vel,mass,label)
+    
     @staticmethod
     def relative_pos(particleA,particleB):
         return np.subtract(particleA.position,particleB.position)
