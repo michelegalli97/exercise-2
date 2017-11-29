@@ -1,9 +1,7 @@
 """
 CMod Ex. 3: Particle3D.py
-
 Author: D Harper & M Galli
 Version: 11/2017
-
 """
 import numpy as np
 import math
@@ -11,25 +9,24 @@ import math
 class Particle3D(object):
     """
     Class to describe 3D particles.
-
     Properties:
-    position(array) - position as an array
-    velocity(array) - velocity as an array
+    position(array) - position as an array (floats)
+    velocity(array) - velocity as an array (floats)
     mass(float) - particle mass
-
     Methods:
     * formatted output
     * kinetic energy
     * first-order velocity update
     * first- and second order position updates
+    * initialize particles from input file
     """
 
     def __init__(self, pos, vel, mass, label):
         """
-        Initialise a Particle1D instance
+        Initialise a Particle3D instance
         
-        :param pos: position as float
-        :param vel: velocity as float
+        :param pos: position as an array of floats
+        :param vel: velocity as an array of floats
         :param mass: mass as float
         """
  
@@ -48,7 +45,7 @@ class Particle3D(object):
     def kinetic_energy(self):
         """
         Return kinetic energy as
-        1/2*mass*vel^2
+        1/2*mass*||vel||^2
         """
         
         return 0.5*self.mass*np.inner(self.velocity,self.velocity)
@@ -58,17 +55,17 @@ class Particle3D(object):
     def leap_velocity(self, dt, force):
         """
         First-order velocity update,
-        v(t+dt) = v(t) + dt*F(t)
+        v(t+dt) = v(t) + dt*F(t).
 
         :param dt: timestep as float
-        :param force: force on particle as float
+        :param force: force on particle as array of floats
         """
         self.velocity = self.velocity + dt*force/self.mass
 
     def leap_pos1st(self, dt):
         """
         First-order position update,
-        x(t+dt) = x(t) + dt*v(t)
+        r(t+dt) = r(t) + dt*v(t)
 
         :param dt: timestep as float
         """
@@ -77,39 +74,44 @@ class Particle3D(object):
     def leap_pos2nd(self, dt, force):
         """
         Second-order position update,
-        x(t+dt) = x(t) + dt*v(t) + 1/2*dt^2*F(t)
+        r(t+dt) = r(t) + dt*v(t) + 1/2*dt^2*F(t)
 
         :param dt: timestep as float
-        :param force: current force as float
+        :param force: current force as array of floats
         """
         self.position = self.position + dt*self.velocity + 0.5*(dt**2)*force/self.mass
     
     @staticmethod
-    def init_from_file(filename):
-        file_handle = open(filename,"r")
-        pos = np.array([0.1,0.1,0.1])
-        vel = np.array([0.1,0.1,0.1])
-        alpha = float(file_handle.readline())
-        De = float(file_handle.readline())
-        Re = float(file_handle.readline())
-        pos[0] = float(file_handle.readline())
-        pos[1] = float(file_handle.readline())
-        pos[2] = float(file_handle.readline())
-        vel[0] = float(file_handle.readline())
-        vel[1] = float(file_handle.readline())
-        vel[2] = float(file_handle.readline())
-        mass = float(file_handle.readline())
-        label = file_handle.readline()
-        file_handle.close()
-        fin = open(filename,"r")
-        data_list = fin.readlines()
-        fin.close()
-        del data_list[3:10+1]
-        print (data_list)
-        fout = open("newfile.txt", "w")
-        fout.writelines(data_list)
-        return Particle3D(pos,vel,mass,label)
+    def init_from_file(filename,l):
+       """
+       Initialize particles from file.
+
+       :param filename: name of the file (should be .txt )
+       :param l: number of line that stores particle parameters 
+       : return : a Particle3D instance
+       """
+       # lines in file should be written as: Re,De,alpha,label,mass,pos[0 -> 2], vel[0 -> 2]
+       file_handle = open(filename, "r") 
+       lines = file_handle.readlines()  # initialise list of lists, all the lines
+       choose = lines[l].split(",")  #split line "l" 
+       pos = np.array([float(0) for x in xrange(0,3)]) #initialize empty arrays (floats)
+       vel = np.array([float(0) for x in xrange(0,3)])
+       label = choose[3]    # read mass, label
+       mass = float(choose[4])
+       for i in xrange(5,8):   #read pos and vel
+           pos[i-5] = float(choose[i])
+       for j in xrange(8,11):
+           vel[j-8] = float(choose[j])
+    
+       return Particle3D(pos,vel,mass,label)
 
     @staticmethod
     def relative_pos(particleA,particleB):
+        """
+        Method to return relative position 
+        of 2 particles.
+
+        :param particleA, particleB : Particle3D instances
+        :return : relative position as an array (floats)
+        """
         return np.subtract(particleA.position,particleB.position)
