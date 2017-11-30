@@ -118,7 +118,7 @@ def main():
     # Post-simulation:
     
     # Close output file
-    delta_E = max(energy_list)-min(energy_list)
+    delta_E = max(energy_list)-min(energy_list) # checking energy relative errors 
     avg_E = sum(energy_list)/len(energy_list)
     if -delta_E/avg_E <= 1e-3:
         print ("Average OK " + str(-delta_E/avg_E))
